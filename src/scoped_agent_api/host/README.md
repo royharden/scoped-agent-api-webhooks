@@ -47,6 +47,41 @@ must durably enqueue each event/subscription exactly once; the domain transactio
 is the durable source of truth even if process wakeup is lost. Subscription
 eligibility timing and replay reconciliation remain DL3-owned.
 
+### Reconciled authority and delivery adapters
+
+The resource-server factory wires `Authority.validate_principal` through
+`Store.set_principal_validator`. That callback accepts the active connection and
+revalidates the request's bearer/session proof against current authority rows;
+it must not open another write connection. API/UI request boundaries clear proof
+before and after requests. Both approval routes and rendered human forms use
+the host facade above. Human confirmation remains explicit, and the consuming
+grant must match the grant bound when confirmation issued the capability.
+
+Initialize the webhook schema explicitly after the host migration with
+`with store.transaction() as conn: webhooks.schema.initialize(conn)`. No host
+module imports webhook initialization or creates delivery tables. Call
+`webhooks.outbox.enqueue(conn, now, limit=100)` within a Store transaction to
+discover missing event/subscription pairs; its uniqueness constraint is
+`(event_id,subscription_id)`. Subscriptions start eligibility at their creation
+time and do not backfill earlier events. Host `occurred_at` is aware ISO UTC text;
+the webhook adapter converts it to epoch seconds for scheduling. Dispatch joins
+`domain_events` and signs its stored BLOB, retaining the event ID across attempts.
+No event copy, second domain event producer or automatic schema activation is
+needed in this module.
+
+Revocation and refresh-family reuse belong to the authority adapter: acquire
+`webhooks.locks.GRANT_LOCKS.hold(grant_id)` before the write transaction, then
+invalidate authority and call `webhooks.subscriptions.suspend_grant(conn,
+grant_id,now)` on that same connection. Commands do not acquire a webhook lock
+while holding a database writer. The worker's separate
+`grant_validator(grant_id,required_scopes)->bool` runs outside its open writer
+transaction under that shared grant lock; it is not interchangeable with the
+request-proof-aware `Store.current_principal` callback. Delivery eligibility,
+grant cascade and management idempotency stay with their owning adapters.
+
+These are source-level reconciliations, not evidence of executed initialization,
+joined HTTP behavior, durability or race correctness.
+
 Idempotency namespace `(subject,grant_id,action,key)`, surface excluded. Request
 digest covers the exact accepted arguments. Successful response retention eight
 days. `expire_results(conn, now)` removes bodies and preserves workspace-lifetime
