@@ -1,0 +1,15 @@
+{
+  "schema_version": "m14.task.v1",
+  "task_id": "dev-submit-001",
+  "consent_fixture_id": "dev-human-consent-001",
+  "steps": [
+    {
+      "operation": "submit",
+      "arguments": {
+        "id": "wo-dev-001"
+      },
+      "expected_version": 1,
+      "idempotency_key": "dev-submit-001"
+    }
+  ]
+}

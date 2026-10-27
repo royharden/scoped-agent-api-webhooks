@@ -1,0 +1,13 @@
+{
+  "producer": "stub",
+  "implementation_status": "stub_only",
+  "purpose": "Original developer examples; not oracle, scoring labels, held-out data, execution observations, or admission evidence.",
+  "signed_delivery": "deferred; no signature/key in this stub",
+  "sha256": {
+    "launch.json": "e0e3b11c4dfa8e25361341a7783ccdd51c376c9994ac7e532059110a10ab1505",
+    "tasks.jsonl": "95712a049b53364f2ecfc8cf965b635ce9f9f01f2047a29a8d77eea433cde04e",
+    "responses.jsonl": "3566c2ffcd43e6c6e4ffd2ca9497c48b099802853fae18cf1e32ff9ba9622d6f",
+    "events.jsonl": "6e0a814f519a4ac4df9a44faf2c9dd7c61e0d2f32f367284f95a8926559316ff"
+  },
+  "digest_encoding": "SHA-256 of UTF-8 bytes with CRLF normalized to LF"
+}
