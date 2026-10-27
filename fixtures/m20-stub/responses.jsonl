@@ -1,0 +1,5 @@
+{"producer":"stub","sequence":1,"phase":"grant","description":"Fictional grant with read/write/submit scopes; no token exists."}
+{"producer":"stub","sequence":2,"phase":"submit","task_id":"dev-submit-001","step_id":"0","decision":"allowed","code":"ok","resource_id":"wo-dev-001","resource_version":2,"effect_ref":null}
+{"producer":"stub","sequence":3,"phase":"delivery","event_id":"evt-dev-001","signature_status":"not_generated","description":"Signing is deferred; this transcript must not be used as a verified signed-delivery sample."}
+{"producer":"stub","sequence":4,"phase":"revoke","grant_id":"grant-dev-001","description":"Illustrative revocation only."}
+{"producer":"stub","sequence":5,"phase":"after_revoke","decision":"denied","code":"invalid_token","subscription_status":"suspended","effect_ref":null}
