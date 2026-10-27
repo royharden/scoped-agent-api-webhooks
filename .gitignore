@@ -1,0 +1,6 @@
+.agent-work/
+__pycache__/
+*.py[cod]
+.venv/
+*.sqlite*
+results/

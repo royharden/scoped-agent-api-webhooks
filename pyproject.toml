@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "scoped-agent-api-webhooks"
+version = "0.1.0"
+description = "Source-only scoped work-order and webhook reference"
+requires-python = ">=3.12"
+dependencies = ["Flask>=3.0,<4", "Authlib>=1.9,<2", "httpx>=0.27,<1", "pydantic>=2,<3"]
+
+[project.scripts]
+wo = "scoped_agent_api.cli.wo:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/scoped_agent_api"]
+
+[tool.ruff]
+target-version = "py312"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
