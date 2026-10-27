@@ -1,0 +1,7 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Work orders</title>
+<style>body{font:1rem system-ui;max-width:70rem;margin:2rem auto;padding:0 1rem;line-height:1.5}nav,form,section{margin:1rem 0}label{display:block;margin:.6rem 0}input,button{font:inherit;padding:.45rem}table{border-collapse:collapse;width:100%}td,th{padding:.6rem;text-align:left;border-bottom:1px solid #ddd}.note{color:#555}code{overflow-wrap:anywhere}</style></head>
+<body><nav><a href="{{ url_for('human_ui.index') }}">Work orders</a> · <a href="{{ url_for('human_ui.handoff') }}">Human approval handoff</a></nav>
+{% block content %}{% endblock %}
+{% if csrf_token %}<form method="post" action="{{ url_for('human_ui.logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button>Sign out of this browser</button></form>{% endif %}
+</body></html>
