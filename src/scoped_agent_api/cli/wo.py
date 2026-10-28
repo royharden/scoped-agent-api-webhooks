@@ -4,7 +4,8 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from typing import Sequence, TextIO
+from typing import Callable, Sequence, TextIO
+from scoped_agent_api.agent.bootstrap import AuthorizationDenied
 from scoped_agent_api.agent.client import FixtureConsent, ResponseError, Session, problem as http_problem, route
 
 
@@ -18,7 +19,8 @@ class Parser(argparse.ArgumentParser):
 
 
 def main(argv: Sequence[str] | None = None, *, session: Session | None = None,
-         consent: FixtureConsent | None = None, stdout: TextIO | None = None,
+         consent: FixtureConsent | None = None,
+         session_factory: Callable[[str], Session] | None = None, stdout: TextIO | None = None,
          stderr: TextIO | None = None) -> int:
     out, err = stdout or sys.stdout, stderr or sys.stderr
     parser = Parser(prog="wo", description="Fixture HTTP client; mutations default to dry-run.")
@@ -44,11 +46,13 @@ def main(argv: Sequence[str] | None = None, *, session: Session | None = None,
             data = {"method": method, "path": path}
         elif method != "GET" and (consent is None or not consent.permits()):
             exit_code, decision, code = 3, "deny", "fixture_consent_required"
-        elif session is None:
-            exit_code, decision, code = 3, "deny", "fixture_session_required"
         elif method != "GET" and not options.idempotency_key:
             raise InputError("mutation requires --idempotency-key")
         else:
+            if session is None and session_factory is not None:
+                session = session_factory(options.actor)
+            if session is None:
+                raise AuthorizationDenied("fixture session required")
             result = session.call(options.operation, method, path, body, options.idempotency_key, surface="cli")
             exit_code = 0 if result.ok else 3 if result.status in {401, 403} else 4 if result.status == 409 else 2 if result.status in {400, 404, 422} else 5
             decision = "allow" if result.ok else "deny" if exit_code == 3 else "error"
@@ -57,6 +61,9 @@ def main(argv: Sequence[str] | None = None, *, session: Session | None = None,
             else:
                 problem = http_problem(result.status, result.data.get("code"))
                 code = str(problem["code"])
+    except AuthorizationDenied:
+        exit_code, decision, code = 3, "deny", "fixture_session_required"
+        print("Fixture authorization unavailable or refused.", file=err)
     except ResponseError:
         exit_code, decision, code = 5, "error", "transport_error"
         problem = http_problem(502, code)
