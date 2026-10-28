@@ -84,6 +84,7 @@ def create_app(store: Any, clock: Any, settings: dict[str, Any]) -> Any:
     if management is None and settings.get("endpoint_guard") is not None:
         from .webhooks_adapter import build_webhooks_service
         management = build_webhooks_service(authority, settings["endpoint_guard"])
+    app.extensions["m14"]["management"] = management
     register_webhooks(app, authority, management)
     register_ui(app, authority, commands, approvals, settings)
     register_oauth_login(app, authority, settings)
