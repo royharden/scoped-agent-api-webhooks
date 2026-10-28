@@ -222,8 +222,9 @@ class FixtureConsent:
         return bool(self.workspace_id and self.consent_fixture_id and self.disposable and self.human_confirmed)
 
 
-def run_task(task: dict[str, object], session: Session, *, apply_fixture: bool = False,
-             consent: FixtureConsent | None = None) -> list[dict[str, object]]:
+def run_task(task: dict[str, object], session: Session | None = None, *, apply_fixture: bool = False,
+             consent: FixtureConsent | None = None,
+             session_factory: Callable[[str], Session] | None = None) -> list[dict[str, object]]:
     """Developer tasks, never oracle expectations. Stops after first refusal/failure."""
     if task.get("schema_version") != "m14.task.v1":
         raise ValueError("unsupported task major/version")
@@ -240,7 +241,8 @@ def run_task(task: dict[str, object], session: Session, *, apply_fixture: bool =
         operation = str(step.get("operation", ""))
         if operation in {"approve", "confirm"}:
             result = Result(403, {"code": "human_only"})
-            session.stopped = True
+            if session is not None:
+                session.stopped = True
         else:
             arguments = dict(step.get("arguments", {}))
             if step.get("expected_version") is not None:
@@ -252,6 +254,10 @@ def run_task(task: dict[str, object], session: Session, *, apply_fixture: bool =
             elif method != "GET" and (not isinstance(key, str) or not key):
                 raise ValueError("mutation requires idempotency_key")
             else:
+                if session is None and session_factory is not None:
+                    session = session_factory("agent")
+                if session is None:
+                    raise ValueError("authenticated fixture session required")
                 result = session.call(operation, method, path, body, str(key) if key else None)
         output.append({"task_id": task.get("task_id"), "step_id": str(index),
                        "decision": "dry_run" if result.data.get("code") == "dry_run" else "allowed" if result.ok else "denied",
