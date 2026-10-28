@@ -79,6 +79,17 @@ transaction under that shared grant lock; it is not interchangeable with the
 request-proof-aware `Store.current_principal` callback. Delivery eligibility,
 grant cascade and management idempotency stay with their owning adapters.
 
+The worker additionally requires keyword `grant_validator_in_transaction=` bound
+to `Authority.grant_validator_in_transaction(conn,grant_id,required_scopes,now)`.
+It checks current grant/family authority using the worker's existing connection
+and UTC time read after acquiring the writer, before recording `attempt_started`.
+It opens no connection, transaction or lock and uses no request proof. This is
+distinct from both `validate_principal(conn,principal,now)` for host commands and
+the worker's outside-writer `Authority.grant_is_active(grant_id,required_scopes)`.
+Keep the outside check immediately before send as well; never inject it as the
+transaction-aware callback, since it opens its own Store transaction. A missing
+worker transaction callback is a constructor error, with no permissive default.
+
 These are source-level reconciliations, not evidence of executed initialization,
 joined HTTP behavior, durability or race correctness.
 
