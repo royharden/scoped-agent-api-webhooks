@@ -4,3 +4,18 @@ __pycache__/
 .venv/
 *.sqlite*
 results/
+
+# Local credentials and generated artifacts
+.env
+.env.*
+.creds/
+ArchiveManager-creds.txt
+*.pem
+*.key
+*.p12
+*.pfx
+node_modules/
+dist/
+build/
+*.egg-info/
+*.zip
