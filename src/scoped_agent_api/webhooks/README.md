@@ -1,7 +1,10 @@
 # Webhook construction interfaces
 
-Source construction only. No runtime, network, database, race, security or
-interoperability check has run. This is a single-process fictional fixture host;
+Source construction with limited construction-exposed development checks.
+ROUND2's stdlib suite exercises local SQLite, signing/retry and fake-transport
+worker/inbox paths; these are builder regressions, not independent validation.
+HTTP, real network, full race/security and interoperability checks remain unrun.
+This is a single-process fictional fixture host;
 the locks do not provide distributed fencing or exactly-once transport.
 
 Explicit initialization after `Store.initialize()`:

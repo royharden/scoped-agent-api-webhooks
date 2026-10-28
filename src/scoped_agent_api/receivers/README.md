@@ -30,7 +30,10 @@ receiver. Invalid signatures/snapshots receive a neutral400, oversize413, durabl
 database failures503 and unexpected failures500. No payload, signing header,
 keyring or exception text enters application error responses/log messages.
 
-This is source-only construction. No factory, HTTP socket, WSGI body cap,
-signature interoperability, commit-before-ACK crash path, restart, error mapping,
-receiver process lifecycle or installed-wheel check has run. Product code never
+ROUND2's construction-exposed stdlib development suite exercises local durable
+receipt/restart/dedupe, version guarding and completed-only pruning. These are
+builder regressions, not an independent study. The authored pytest receiver
+tests await the shared dependency environment. No HTTP factory/socket, WSGI body
+cap, independent signature interoperability, real crash/ACK path, error mapping
+or installed-wheel check has run. Product code never
 imports the deliberately insecure root demo arm.
