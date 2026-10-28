@@ -178,8 +178,52 @@ reference receipt and inbox processing remain distinct lifecycle steps.
 
 Composition ownership: DL2 owns API factory/Authority/HTTP facade and its two
 grant callbacks; DL1 owns Store/domain event production; DL3 owns the exact
-worker/service/schema/scan contract above. The executable fixture lifecycle and
-transport adapter are still missing composition work owned by INT for assignment
-to the demo/runner owner at the authorized activation boundary. This document
+worker/service/schema/scan contract above. The executable fixture lifecycle is
+assigned to DL2 by INT; source for the actual transport adapter and receiver HTTP
+factory is now provided below. Actual activation remains deferred. This document
 does not claim that an HTTP factory itself starts delivery, applies migrations,
 seeds grants or runs the receiver inbox. All joined behavior remains unverified.
+
+## Actual HTTP adapter source (not exercised)
+
+`webhooks.transport.HttpxDeliveryTransport(endpoint_guard)` implements the
+worker's synchronous `send(endpoint,body,headers,timeout=5.0)->TransportResponse`.
+Construction stores configuration only; it does not create a client, app,
+listener or request. Inject this object as the `transport` in the recipe above.
+Composition configuration declarations are `follow_redirects=False`,
+`trust_env=False` and `total_timeout_seconds=5.0`; these describe the source's
+fixed controls and maximum budget, not measured deadline proof. An individual
+send may request a shorter positive timeout but cannot request more than5s.
+Only exact launch-created EndpointGuard URLs pass both admission and dispatch;
+no DNS names, alternate addresses, redirects or environment proxy trust are
+accepted. Only the signer's three unambiguous webhook headers are accepted and
+passed unchanged with the immutable raw body. Header authority overrides are
+refused. HTTPX streams through response headers without buffering response
+bodies; actual statuses, including3xx, return unchanged to the worker.
+
+Each explicit send uses one fresh async HTTPX client with `trust_env=False`,
+`follow_redirects=False`, phase timeout disabled and a single `asyncio.timeout`
+covering the remaining TOTAL operation budget. A monotonic deadline is anchored
+before the synchronous `asyncio.run` bridge; setup/import elapsed time is deducted
+before network work. Deadline exhaustion raises a fixed diagnostic, never a
+fabricated status. Client/response async contexts close on success/error/timeout.
+No detached timeout thread or background send is used. A running event loop on
+the caller thread is explicitly unsupported and refused before a coroutine is
+created; a synchronous worker must be invoked from a synchronous caller.
+
+Cancellation and cleanup are cooperative dependency behavior, not a measured
+hard real-time bound. Source requests a total maximum of5s, but actual elapsed
+time, dependency cancellation/cleanup and event-loop shutdown require runtime
+proof. Blocking import/setup cannot be preempted; if it consumes the deadline,
+the adapter refuses all network work. Bytes already transmitted before timeout
+cannot be recalled and may arrive after cancellation/revoke. Fixed failure codes
+contain no URL, event body, signing header or dependency exception text. No
+HTTPX client, request, timing check or cancellation experiment has been executed.
+
+Receiver source: `receivers.http.create_receiver_app(receiver_id,receiver,clock)`
+wraps an existing ReferenceReceiver or VerifyOnlyReceiver at its configured
+hook path. See receivers/README.md for raw bounds, neutral error mapping and
+explicit initialization/processing/recovery lifecycle. The factory neither
+initializes an inbox nor starts listeners or processes rows; reference ACK still
+follows the existing committed inbox insertion. Its injected clock preserves the
+virtual fixture epoch. Root demo_insecure remains outside this product factory.
