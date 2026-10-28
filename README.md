@@ -1,5 +1,9 @@
 # Scoped agent API and webhook delivery reference
 
-M14: fictional Fixit Works work orders, scoped mock OAuth, human approval, durable webhook delivery and receiver comparison. Under construction in Dirty Mode: runtime unverified. No measured conformance or security claims.
+M14 is a fictional Fixit Works work-order host with scoped mock OAuth, human approval, and durable webhook delivery. Local Dirty construction is in progress: runtime unverified. No measured conformance or security claims.
 
-Authoritative plan is held privately at ../planning/promoted/PLAN-M14-v1.md (source SHA256 604b6c4c07e4dcc623f0ed45bf1b441e6ff0ddf747ada8b9f18faa4da27649d6). Source-only launch; no installations, network, runtime tests or infrastructure performed. License and independent evaluation admission remain pending.
+Source integrated so far includes transactional domain/storage/approval, HTTP client/CLI, and provisional contracts. CLI defaults to a no-call dry-run; authenticated mutations require an in-memory Session and trusted disposable fixture consent from a future launcher. See docs/CLIENT-USAGE.md. Mock OAuth client discovery/PKCE/refresh source completion is assigned; no successful end-to-end journey exists yet. Authorization-server/API/UI and delivery/receiver owner candidates remain under construction/review.
+
+contracts/v1 and fixtures/m20-stub hold original syntax contracts/development transcripts. Readiness is stub_only; delivery examples are unsigned and unexecuted. Developer fixtures are not independent evaluation data. See docs/DEFERRED-VALIDATION.md and DEPENDENCY-STATUS.md for limits. No installation, runtime test, network call or infrastructure has been performed by this run. Product/fixture licensing and independent evaluation admission remain pending; no LICENSE adoption or independent verification claim.
+
+Authoritative plan remains privately at ../planning/promoted/PLAN-M14-v1.md; original source SHA256604b6c4c07e4dcc623f0ed45bf1b441e6ff0ddf747ada8b9f18faa4da27649d6. Private coordination and transcripts stay outside this product repository.

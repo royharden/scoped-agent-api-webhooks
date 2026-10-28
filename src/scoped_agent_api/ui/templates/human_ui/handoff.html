@@ -1,0 +1,3 @@
+{% extends 'human_ui/base.html' %}{% block content %}
+<h1>Human approval handoff</h1><p>A requester can hand you a challenge ID and work-order ID. Only the server-selected human executor can confirm it. Entering identifiers grants no authority.</p><form method="post" action="{{ url_for('human_ui.prepare_confirmation') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><label>Challenge ID <input name="challenge_id" required maxlength="200"></label><label>Work-order ID <input name="order_id" required maxlength="200"></label><button>Review approval decision</button></form>
+{% endblock %}

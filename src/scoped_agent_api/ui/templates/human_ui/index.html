@@ -1,0 +1,6 @@
+{% extends 'human_ui/base.html' %}{% block content %}
+<h1>Work orders</h1><table><thead><tr><th>Title</th><th>Status</th><th>Assignee</th><th>Version</th></tr></thead><tbody>
+{% for order in orders %}<tr><td><a href="{{ url_for('human_ui.detail',order_id=order.id) }}">{{ order.title }}</a></td><td>{{ order.status }}</td><td>{{ order.assignee or 'Unassigned' }}</td><td>{{ order.version }}</td></tr>{% else %}<tr><td colspan="4">No work orders.</td></tr>{% endfor %}</tbody></table>
+<h2>Create work order</h2><form method="post" action="{{ url_for('human_ui.create') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="idempotency_key" value="{{ idempotency_key() }}"><label>Title <input name="title" maxlength="1000" required></label><label>Assignee <input name="assignee" maxlength="1000"></label><button>Create draft</button></form>
+<p class="note">Each action uses your current human grant. A visible form does not grant permission.</p>
+{% endblock %}
