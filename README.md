@@ -8,4 +8,4 @@ contracts/v1 and fixtures/m20-stub hold original syntax contracts/development tr
 
 Authoritative plan remains privately at ../planning/promoted/PLAN-M14-v1.md; original source SHA256604b6c4c07e4dcc623f0ed45bf1b441e6ff0ddf747ada8b9f18faa4da27649d6. Private coordination and transcripts stay outside this product repository.
 
-Round 2 local validation: the client owner reports six stdlib development tests passed on app-local Python 3.12.13. Pytest/Flask/Authlib suites are not run pending guarded dependency setup; this is not independent evaluation.
+Round 2 local validation: owners report separate app-local Python 3.12.13 stdlib development runs passed: domain 8, authority 3, delivery/receivers 10, clients 6. The delivery run first found an eager-annotation import defect; it was fixed and the integrated outbox import was checked successfully. These are developer findings, not independent evaluation or a combined full-product run. Pytest/Flask/Authlib suites are not run pending guarded dependency setup.
