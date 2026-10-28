@@ -98,3 +98,88 @@ replay/tolerance boundaries; restart and every crash point; duplicate/conflict/
 stale counters; receiver pruning and lifetime versions; installed-wheel demo
 exclusion; typing/lint and all runtime tests. Independent oracle, blind studies
 and license admission remain pending under their separate owners.
+
+## Joined construction recipe (not executed)
+
+The following is a source-level composition recipe for a later authorized
+activation. It has not been run and starts no listener in the example. DL2's
+current `Authority` source supplies both worker callbacks with the exact
+signatures shown. Its outside-writer method reads time after writer acquisition;
+its transaction-aware method reads only the supplied connection. Keep the same
+Store, clock, configured issuer/resource and grant-lock singleton throughout.
+Do not install a second Authority instance as the Store principal validator:
+the resource-server factory binds the request's proof to its own instance.
+
+```python
+from random import Random
+
+from scoped_agent_api.api.app import create_app as create_resource_app
+from scoped_agent_api.authz.app import create_app as create_authorization_app
+from scoped_agent_api.webhooks.locks import GRANT_LOCKS
+from scoped_agent_api.webhooks.outbox import DeliveryService, enqueue
+from scoped_agent_api.webhooks.retry_policy import RetryPolicy
+from scoped_agent_api.webhooks.schema import initialize as initialize_webhooks
+from scoped_agent_api.webhooks.subscriptions import SubscriptionService
+from scoped_agent_api.webhooks.worker import DeliveryWorker
+
+
+def compose_fixture(store, clock, settings, endpoint_guard, transport):
+    # Inputs are explicit fixture objects; no credential or environment loading.
+    # Leave Authlib spike activation false until the required future spike passes.
+    config = dict(settings)
+    config["endpoint_guard"] = endpoint_guard
+    # Use the factory's own management builder so request-local authority proof
+    # and Store.current_principal are tied to the same Authority instance.
+    if config.get("webhooks_service") is not None:
+        raise ValueError("this recipe requires the factory-owned management facade")
+    resource_app = create_resource_app(store, clock, config)
+    authority = resource_app.extensions["m14"]["authority"]
+    authorization_app = create_authorization_app(store, clock, config)
+
+    # Explicit lifecycle work, not an import/factory side effect. These calls are
+    # deferred under Dirty Mode; host must exist before either owner migration.
+    store.initialize()
+    authority.initialize()
+    with store.transaction() as conn:
+        initialize_webhooks(conn)
+
+    subscriptions = SubscriptionService(
+        store, clock, endpoint_guard, authority.grant_is_active)
+    deliveries = DeliveryService(subscriptions)
+    worker = DeliveryWorker(
+        store, clock, transport, endpoint_guard,
+        authority.grant_is_active, RetryPolicy(Random(1414)),
+        grant_validator_in_transaction=authority.grant_validator_in_transaction,
+        grant_locks=GRANT_LOCKS)
+    # Startup-only, before any dispatcher starts. Never race a live worker.
+    worker.recover_inflight()
+    return resource_app, authorization_app, subscriptions, deliveries, worker
+
+
+def dispatch_tick(store, clock, worker):
+    # Source events are already committed with the domain mutation. A lost wake
+    # is harmless: scanning derives missing delivery pairs from durable rows.
+    with store.transaction() as conn:
+        queued = enqueue(conn, clock.now(), limit=100)
+    started = worker.run_due(clock.now(), limit=100)
+    return queued, started
+```
+
+Factories return objects only; a future lifecycle runner must create the
+disposable database/fixture settings, exact claimed loopback endpoint allowlist,
+bounded transport adapter and receiver stores, then orchestrate startup, ticks,
+faults, recovery and shutdown. No listener, timer or loop is supplied by this
+recipe. Repeat bounded ticks while work remains; do not assume a single100-row
+enqueue covers a larger backlog. Direct management calls require an actual
+request-local bearer/session proof established by this SAME resource Authority;
+passing a hand-built PrincipalContext to these objects does not authorize it.
+Receiver stores initialize separately using `ReceiverStore(path).initialize()`;
+reference receipt and inbox processing remain distinct lifecycle steps.
+
+Composition ownership: DL2 owns API factory/Authority/HTTP facade and its two
+grant callbacks; DL1 owns Store/domain event production; DL3 owns the exact
+worker/service/schema/scan contract above. The executable fixture lifecycle and
+transport adapter are still missing composition work owned by INT for assignment
+to the demo/runner owner at the authorized activation boundary. This document
+does not claim that an HTTP factory itself starts delivery, applies migrations,
+seeds grants or runs the receiver inbox. All joined behavior remains unverified.
