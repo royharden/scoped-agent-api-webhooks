@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://m14.invalid/contracts/v1/event.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "m14.event.v1"
+    },
+    "type": {
+      "enum": [
+        "work_order.created",
+        "work_order.updated",
+        "work_order.submitted",
+        "work_order.approved",
+        "work_order.closed",
+        "work_order.cancelled"
+      ]
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "resource_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "resource_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "data": {
+      "$ref": "work-order.schema.json"
+    }
+  },
+  "required": [
+    "schema_version",
+    "type",
+    "timestamp",
+    "resource_id",
+    "resource_version",
+    "data"
+  ],
+  "additionalProperties": false,
+  "description": "Syntax only. Consumers must also verify raw-byte signatures and snapshot identity/version equality. No policy or scoring logic is shared."
+}

@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://m14.invalid/contracts/v1/task-step-result.schema.json",
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "step_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "decision": {
+      "enum": [
+        "allowed",
+        "denied",
+        "dry_run",
+        "error"
+      ]
+    },
+    "code": {
+      "type": "string",
+      "minLength": 1
+    },
+    "resource_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "resource_version": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1
+    },
+    "effect_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "task_id",
+    "step_id",
+    "decision",
+    "code",
+    "resource_id",
+    "resource_version",
+    "effect_ref"
+  ],
+  "additionalProperties": false,
+  "description": "Correlation/effect references are labels, never evidence that a durable effect occurred."
+}

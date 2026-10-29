@@ -1,0 +1,23 @@
+{
+  "interface_version": "m14.v1",
+  "producer": "stub",
+  "producer_commit": null,
+  "implementation_status": "stub_only",
+  "schema_sha256": {
+    "cli-envelope.schema.json": "f5c60fcdfbdd0ecc7e7cb80d4c55a013830e3451e034e55421f0f7ceb6e5575f",
+    "event.schema.json": "7da0f8f57f8702e1df3cc6c83ce4e76bf6f8be934d04b58a7c771c661471e965",
+    "problem.schema.json": "2e7d4bc35d645e76706d515480d71117b3075de64903dc3f53dcc991d8bbacfc",
+    "task-step-result.schema.json": "de03c663a8d2c7c94f4d943e5b65bf17f7e140ddb45859573619deda57967ae4",
+    "task.schema.json": "86c45aa66bf60481ce6bd38da32e7fb3c5ed9b21efbaf2e01afda991a38d84b9",
+    "work-order.schema.json": "de6f24069b8587cbf94b2e00c858f204d4416e918e58aad2e54469bd27c19366"
+  },
+  "fixture_sha256": {
+    "events.jsonl": "6e0a814f519a4ac4df9a44faf2c9dd7c61e0d2f32f367284f95a8926559316ff",
+    "launch.json": "e0e3b11c4dfa8e25361341a7783ccdd51c376c9994ac7e532059110a10ab1505",
+    "manifest.json": "924e63402a1c2626385f749ea29e4f6fce65f7add4626f1959f1cf61202a7e83",
+    "responses.jsonl": "3566c2ffcd43e6c6e4ffd2ca9497c48b099802853fae18cf1e32ff9ba9622d6f",
+    "tasks.jsonl": "95712a049b53364f2ecfc8cf965b635ce9f9f01f2047a29a8d77eea433cde04e"
+  },
+  "readiness_note": "Proposed syntax only. Reject unknown major versions. Real-host same-task, signature, CLI and integration checks remain deferred; schema compatibility does not upgrade readiness.",
+  "digest_encoding": "SHA-256 of UTF-8 bytes with CRLF normalized to LF"
+}

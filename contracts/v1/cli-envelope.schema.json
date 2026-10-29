@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://m14.invalid/contracts/v1/cli-envelope.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "m14.cli.v1"
+    },
+    "decision": {
+      "enum": [
+        "allow",
+        "deny",
+        "dry_run",
+        "error"
+      ]
+    },
+    "code": {
+      "type": "string",
+      "minLength": 1
+    },
+    "data": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "problem": {
+      "anyOf": [
+        {
+          "$ref": "problem.schema.json"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "dry_run": {
+      "type": "boolean"
+    },
+    "exit_code": {
+      "enum": [
+        0,
+        2,
+        3,
+        4,
+        5
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "decision",
+    "code",
+    "data",
+    "problem",
+    "dry_run",
+    "exit_code"
+  ],
+  "additionalProperties": false,
+  "description": "One JSON object on stdout; diagnostics on stderr. Never include bearer tokens or authorization codes."
+}

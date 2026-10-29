@@ -1,0 +1,13 @@
+{
+  "producer": "stub",
+  "interface_version": "m14.v1",
+  "implementation_status": "stub_only",
+  "issuer": "http://127.0.0.1:24990",
+  "resource": "http://127.0.0.1:24991",
+  "authorization_endpoint": "http://127.0.0.1:24990/authorize",
+  "token_endpoint": "http://127.0.0.1:24990/token",
+  "revocation_endpoint": "http://127.0.0.1:24990/revoke",
+  "fixture_workspace_id": "development-only-unallocated",
+  "consent_fixture_id": "dev-human-consent-001",
+  "notice": "Illustrative URLs only; no listener or port reservation exists. No credentials included."
+}

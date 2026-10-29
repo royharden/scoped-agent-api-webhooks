@@ -1,0 +1,5 @@
+# Construction-exposed development inputs
+
+DevelopmentRegistry in agent/development.py is the canonical original fictional registry: dev.agent/agent.dev and dev.human/appr.sam, explicit consent ID and separate AS/resource/callback URLs. No external identity/account is involved. Its consent resolver requires the caller to choose allow/refuse explicitly and checks client/resource/scope membership. No scoring labels, independent oracle or held-out fixtures live here.
+
+DisposableLaunch.generate requires human_confirmed=True, creates a generated directory outside OneDrive (default system temp), and writes only nonsecret development launch facts. No token/key/verifier is persisted. compose_development builds the real accepted API/AS composition with Authlib gate false. The in-process transport calls actual Flask routes without sockets, never fabricates callback success and refuses unknown destinations. Development delivery transport always fails closed; no receiver or successful delivery claim. Actual AS success remains pending DL2 spike disposition. No placeholders for credentials; actual spend USD0.
